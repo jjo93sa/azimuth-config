@@ -5,9 +5,9 @@ that can be executed against the deployed Azimuth to validate that it is working
 
 Currently, the following tests can be generated:
 
-  * Deploy and verify [CaaS clusters](../configuration/12-caas.md)
-  * Deploy and verify [Kubernetes clusters](../configuration/10-kubernetes-clusters.md)
-  * Deploy and verify [Kubernetes apps](../configuration/11-kubernetes-apps.md)
+- Deploy and verify [CaaS clusters](../configuration/12-caas.md)
+- Deploy and verify [Kubernetes clusters](../configuration/10-kubernetes-clusters.md)
+- Deploy and verify [Kubernetes apps](../configuration/11-kubernetes-apps.md)
 
 The generated test suites use [Robot Framework](https://robotframework.org/) to handle the
 execution of the tests and gathering and reporting of results.
@@ -27,7 +27,7 @@ for interacting with Azimuth, which in turn uses the
 target Azimuth deployment.
 The result is that a typical test case looks something like this:
 
-```robotframework  title="Example of a generated test case"
+```robotframework title="Example of a generated test case"
 *** Settings ***
 
 Name          CaaS
@@ -73,21 +73,24 @@ as expected. Finally, the workstation is deleted.
 ### Config
 
 Make sure references to the application credential authenticator in your current config environment
-are either set to `true` or removed completely: 
-```yaml  title="environments/my-site/clouds.yaml"
+are either set to `true` or removed completely:
+
+```yaml title="environments/my-site/clouds.yaml"
 azimuth_authenticator_appcred_enabled: true
 ```
 
 ### Firefox package
-If you are running tests manually outside of a CI environment, you need to ensure you have the correct
-Firefox package installed for Selium. 
 
-On Ubuntu: 
+If you are running tests manually outside of a CI environment, you need to ensure you have the correct
+Firefox package installed for Selium.
+
+On Ubuntu:
+
 ```
 # Remove any old firefox packages
 sudo apt remove --purge  firefox
 sudo snap remove --purge firefox
-# Add the Mozilla PPA 
+# Add the Mozilla PPA
 wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
 echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
 
@@ -105,10 +108,10 @@ sudo apt update && sudo apt install firefox
 ### Credentials for executing tests
 
 The generated test suite uses an OpenStack application credential to authenticate with Azimuth,
-and this credential determines which project test platforms will be created in. This *can*
+and this credential determines which project test platforms will be created in. This _can_
 be the same project that Azimuth is deployed in, but should ideally be a different project.
 
-!!! danger  "Application credential must be unrestricted"
+!!! danger "Application credential must be unrestricted"
 
     Because Azimuth creates an application credential for each deployed platform, the
     application credential used to authenticate with Azimuth to create test platforms
@@ -120,7 +123,7 @@ be the same project that Azimuth is deployed in, but should ideally be a differe
 The application credential used for running tests should be appended to the
 [same clouds.yaml as the credential used to deploy Azimuth](../configuration/01-prerequisites.md#application-credential).
 
-```yaml  title="environments/my-site/clouds.yaml"
+```yaml title="environments/my-site/clouds.yaml"
 clouds:
   # The main application credential used to deploy Azimuth
   openstack:
@@ -144,7 +147,6 @@ clouds:
     identity_api_version: 3
     auth_type: "v3applicationcredential"
 ```
-
 
 ## Generating and executing tests
 
@@ -186,9 +188,9 @@ OS_CLOUD=unrestricted ./bin/run-tests
 
 By default, tests cases are generated for:
 
-  * All installed CaaS cluster types
-  * All installed **active** (i.e. non-deprecated) Kubernetes cluster types
-  * All installed Kubernetes app templates
+- All installed CaaS cluster types
+- All installed **active** (i.e. non-deprecated) Kubernetes cluster types
+- All installed Kubernetes app templates
 
 The following sections describe how to enable, disable and configure tests for the
 different types of platform.
@@ -208,21 +210,21 @@ different types of platform.
 
 Test cases for CaaS cluster types perform the following steps:
 
-  1. Build the cluster parameters using best-effort guesses plus overrides
-  2. Create a cluster using the parameters
-  3. Wait for the cluster to become `Ready`
-  4. Check that the Zenith services for the cluster are accessible
-  5. (Optional) Verify that the page title for the Zenith service contains some expected content
-  6. Delete the cluster
+1. Build the cluster parameters using best-effort guesses plus overrides
+2. Create a cluster using the parameters
+3. Wait for the cluster to become `Ready`
+4. Check that the Zenith services for the cluster are accessible
+5. (Optional) Verify that the page title for the Zenith service contains some expected content
+6. Delete the cluster
 
-!!! info  "Verification of Zenith service page titles"
+!!! info "Verification of Zenith service page titles"
 
     Step 5 is used to verify that the Zenith authentication loop brings you back to the
     correct service.
 
     Currently, no other verification of the behaviour of the service is performed.
 
-!!! warning  "Best-effort guesses for parameter values"
+!!! warning "Best-effort guesses for parameter values"
 
     Best-effort guesses for parameter values are produced in the following way:
 
@@ -236,7 +238,7 @@ Test cases for CaaS cluster types perform the following steps:
 The generation of tests for CaaS cluster types can be suppressed completely using the
 following variable:
 
-```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
+```yaml title="environments/my-site/inventory/group_vars/all/tests.yml"
 generate_tests_caas_suite_enabled: false
 ```
 
@@ -244,13 +246,13 @@ By default, a test case is generated for all cluster types except those that are
 disabled. This logic can be inverted, so that test cases are **only** generated for cluster
 types where they are **explicitly enabled**, using the following variable:
 
-```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
+```yaml title="environments/my-site/inventory/group_vars/all/tests.yml"
 generate_tests_caas_default_test_case_enabled: false
 ```
 
 The following variables are available to affect the test generation for each cluster type:
 
-```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
+```yaml title="environments/my-site/inventory/group_vars/all/tests.yml"
 # Indicates if the test case for the cluster type should be enabled
 generate_tests_caas_test_case_{cluster_type}_enabled: true
 
@@ -264,6 +266,16 @@ generate_tests_caas_test_case_{cluster_type}_service_{service_name}_expected_tit
 generate_tests_caas_test_case_{cluster_type}_verify_timeout: "45 minutes"
 ```
 
+!!! tip "Coerce a value to something other than a string"
+
+    By default the Robot Framework coerces values to strings. Robot can be instructed to treat
+    the value literally using the syntax "${x}", for example:
+
+    ```yaml
+    # Make Robot treat the override as an integer, not a string
+    generate_tests_caas_test_case_{cluster_type}_param_{parameter_name}: "${42}"
+    ```
+
 !!! warning
 
     If the cluster type or service name contain dashes (`-`), they will be replaced with
@@ -273,14 +285,14 @@ generate_tests_caas_test_case_{cluster_type}_verify_timeout: "45 minutes"
 
 For Kubernetes cluster templates, the generated test cases perform the following steps:
 
-  1. Build the Kubernetes cluster configuration
-  2. Create a Kubernetes cluster using the configuration
-  3. Wait for the Kubernetes cluster to become `Ready`
-  4. Check that the Zenith service for the Kubernetes Dashboard is working, if configured
-  5. Check that the Zenith service for the monitoring is working, if configured
-  6. Delete the Kubernetes cluster
+1. Build the Kubernetes cluster configuration
+2. Create a Kubernetes cluster using the configuration
+3. Wait for the Kubernetes cluster to become `Ready`
+4. Check that the Zenith service for the Kubernetes Dashboard is working, if configured
+5. Check that the Zenith service for the monitoring is working, if configured
+6. Delete the Kubernetes cluster
 
-!!! info  "Verification of Zenith services"
+!!! info "Verification of Zenith services"
 
     Steps 4 and 5 use the same title-based verification as for CaaS clusters.
 
@@ -289,7 +301,7 @@ For Kubernetes cluster templates, the generated test cases perform the following
 The generation of tests for Kubernetes cluster templates can be suppressed completely using
 the following variable:
 
-```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
+```yaml title="environments/my-site/inventory/group_vars/all/tests.yml"
 generate_tests_kubernetes_suite_enabled: false
 ```
 
@@ -298,7 +310,7 @@ By default, a test case is generated for each **active**, i.e. non-deprecated, c
 The following variables are available to affect the test generation for Kubernetes cluster
 templates:
 
-```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
+```yaml title="environments/my-site/inventory/group_vars/all/tests.yml"
 # When false (the default), test cases are generated for all
 # non-deprecated templates
 #
@@ -324,23 +336,23 @@ generate_tests_kubernetes_test_case_monitoring_enabled: true
 For Kubernetes app templates, we first deploy a Kubernetes cluster to host the apps.
 Once this cluster becomes `Ready`, the following steps are performed for each app:
 
-  1. Create the app with inferred configuration
-  2. Wait for the app to become `Deployed`
-  3. For each specified Zenith service, check that it is accessible
-  4. (Optional) Verify that the page title for the Zenith service contains some expected content
-  5. Delete the app
+1. Create the app with inferred configuration
+2. Wait for the app to become `Deployed`
+3. For each specified Zenith service, check that it is accessible
+4. (Optional) Verify that the page title for the Zenith service contains some expected content
+5. Delete the app
 
-!!! info  "Verification of Zenith services"
+!!! info "Verification of Zenith services"
 
     As for other platform types, only title-based verification is performed for Zenith services.
 
-!!! warning  "Overridding inferred configuration"
+!!! warning "Overridding inferred configuration"
 
     Currently, it is not possible to override the inferred configuration for Kubernetes
     apps. This may mean it is not currently possible to test some Kubernetes apps that
     have required parameters.
 
-!!! warning  "Specifying Zenith services"
+!!! warning "Specifying Zenith services"
 
     With Kubernetes apps, the expected Zenith services are not known up front as part
     of the app metadata, as they are for CaaS clusters.
@@ -350,7 +362,7 @@ Once this cluster becomes `Ready`, the following steps are performed for each ap
 The generation of tests for Kubernetes app templates can be suppressed completely using the
 following variable:
 
-```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
+```yaml title="environments/my-site/inventory/group_vars/all/tests.yml"
 generate_tests_kubernetes_apps_suite_enabled: false
 ```
 
@@ -358,14 +370,14 @@ By default, a test case is generated for all app templates except those that are
 disabled. This logic can be inverted, so that test cases are **only** generated for app
 templates where they are **explicitly enabled**, using the following variable:
 
-```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
+```yaml title="environments/my-site/inventory/group_vars/all/tests.yml"
 generate_tests_kubernetes_apps_default_test_case_enabled: false
 ```
 
 The Kubernetes cluster on which the apps will be deployed is configured using the
 following variables:
 
-```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
+```yaml title="environments/my-site/inventory/group_vars/all/tests.yml"
 # The name of the Kubernetes cluster template to use
 # If not given, the latest Kubernetes cluster template is used
 generate_tests_kubernetes_apps_k8s_template:
@@ -381,7 +393,7 @@ generate_tests_kubernetes_apps_k8s_worker_count: 2
 
 The following variables are available to affect the test generation for each app template:
 
-```yaml  title="environments/my-site/inventory/group_vars/all/tests.yml"
+```yaml title="environments/my-site/inventory/group_vars/all/tests.yml"
 # Indicates if the test case for the cluster type should be enabled
 generate_tests_kubernetes_apps_test_case_{app_template}_enabled: true
 
